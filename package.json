@@ -4,16 +4,17 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"start": "parcel src/index.html --open",
-		"build": "parcel build index.html --out-dir=build"
+		"start": "parcel index.html --open",
+		"build": "parcel build index.html --out-dir=build",
+		"predeploy": "npm run build",
+		"deploy": "vercel --prod"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
-	"dependencies": {
-		"bootstrap": "^5.1.3"
-	},
 	"devDependencies": {
-		"parcel-bundler": "^1.12.5"
+		"bootstrap": "^5.1.3",
+		"parcel-bundler": "^1.12.5",
+		"vercel": "^28.13.1"
 	}
 }

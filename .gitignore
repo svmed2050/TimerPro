@@ -2,3 +2,5 @@ node_modules
 build/
 dist/
 .cache/
+.parcel-cache/
+.vercel
