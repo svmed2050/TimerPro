@@ -1,0 +1,166 @@
+
+
+.clockSec {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.btn:focus {
+  box-shadow:none
+}
+
+.btnReset, .alertHidden, .spanHidden {
+  display: none;
+}
+
+.alertPlace {
+  position: absolute;
+  width: 200px;
+  right: -400px;
+  top: 42%;
+  animation-name: alertPlace;
+  animation-duration: 6s;
+}
+
+
+
+.alertPlace::before {
+    content:"\A";
+    border-style: solid;
+    border-width: 15px 15px 10px 0;
+    border-color: transparent #fff3cd transparent transparent;
+    position: absolute;
+    top: 20px;
+    left: -15px;
+}
+
+.btnAnimation {
+  animation-name: displayAnimation;
+  animation-duration: 1s;
+}
+
+
+#spanTimerBlock {
+  opacity: 0;
+  transition: all 1000ms linear 0ms;
+}
+
+
+@keyframes alertPlace {
+  0% {right: -400px}
+  30% {right: 20%}
+  60% {right: 20%}
+  80% {right: 20%}
+  100% {right: -400px}
+}
+
+@keyframes inputGoSmall {
+ from { 
+  height: 70px;
+  width: 70px;
+  font-size: 50px;
+  padding-left: 6px;
+}
+ to {
+  height: 35px;
+  width: 35px;
+  font-size: 25px;
+  padding-left: 3px;
+ }
+}
+@keyframes inputGoBig {
+ from { 
+  height: 35px;
+  width: 35px;
+  font-size: 25px;
+  padding-left: 3px;
+ 
+}
+ to {
+  height: 70px;
+  width: 70px;
+  font-size: 50px;
+  padding-left: 6px;
+ }
+}
+
+label {
+  display: block;
+}
+
+.smallInput {
+  animation-name: inputGoSmall;
+  animation-duration: 1s;
+  height: 35px;
+  width: 35px;
+  font-size: 25px;
+  padding-left: 3px;
+}
+
+.bigInput {
+  animation-name: inputGoBig;
+  animation-duration: .6s;
+  height: 70px;
+  width: 70px;
+  font-size: 50px;
+  padding-left: 6px;
+}
+
+/* input {
+  height: 70px;
+  width: 70px;
+  font-size: 50px;
+  padding-left: 6px;
+} */
+
+.semicolon {
+  font-size: 50px;
+}
+
+.startBtn {
+  width: 200px;
+  margin-bottom: 40px;
+}
+
+#seconds, #minutes {
+  display: inline-block;
+  margin-bottom: 40px;
+  font-size: 50px;
+}
+
+.accordion-button p {
+  text-align: center;
+  margin: 0 auto;
+  padding-left: 20%;
+}
+
+.accordion {
+  width: 350px;
+  margin: 0 auto;
+  padding-left: 50px;
+}
+
+#staticMin {
+  margin-bottom: 20px;
+}
+
+.form-select, .form-range {
+  width: 200px;
+  text-align: center;
+  margin: 0 auto;
+  margin-bottom: 10px;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
