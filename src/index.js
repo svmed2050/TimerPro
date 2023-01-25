@@ -1,8 +1,5 @@
 
-
 const music = document.getElementById('musicId')
-const musicSelect = document.getElementById('musicSelect')
-const customVolume = document.getElementById('customVolume')
 
 const start = document.getElementById('startBtn')
 const userSecondInput = document.getElementById('userSecondInput')
@@ -15,15 +12,34 @@ const staticMin = document.getElementById("staticMin")
 const alertMessage = document.getElementById("alert")
 const semicolon = document.querySelector(".semicolon")
 const btnReset = document.querySelector('.btnReset')
+const title = document.getElementById('title');
 
-let intervalId, timeoutId, currentTime = 0;
+let storage;
+let intervalId, currentTime = 0;
 let pauseTime = 0;
 let staticTime;
 let objValue = {};
+let objStorage = {};
+let objFromStore = {};
+
+let currentEventKey, prevEventKey;
+let prevSelectionSec, currentSelectionSec;
+let prevSelectionMin, currentSelectionMin;
+
+document.addEventListener('keyup', inputKeyEnter)
+userSecondInput.addEventListener('input', funcSecInput)
+userMinuteInput.addEventListener('input', funcMinInput)
+start.addEventListener('click', timerStart)
+staticMin.addEventListener('click', userBtnStaticValue);
 
 musicModule();
+checkStorage();
 
 function musicModule() {
+
+  const musicSelect = document.getElementById('musicSelect')
+  const customVolume = document.getElementById('customVolume')
+
   music.volume = customVolume.value;
 
   customVolume.onchange = () => {
@@ -37,22 +53,41 @@ function musicModule() {
   }
 }
 
-checkStorage();
-
 function checkStorage() {
-  const storage = localStorage.getItem('currentTime')
+  objFromStore = localStorage.getItem('objStorage')
+  objFromStore = JSON.parse(objFromStore)
+  if (objFromStore !== null) {
+    storage = objFromStore.currentTime;
+  }
   if (storage > 0) {
+    objValue.userMinuteInput = '';
+    objValue.userSecondInput = '';
     currentTime = storage
     pauseApp();
-    userMinuteInput.focus();
+    getInputSmall()
   } else { resetApp() }
 }
 
-start.addEventListener('click', timerStart)
-// userSecondInput.addEventListener('keypress', inputKeyEnter)
-document.addEventListener('keydown', inputKeyEnter)
+function storageSave() {
+  objStorage = {
+    // ...objStorage,
+    currentTime: currentTime,
+    inputValueSec: userSecondInput.value,
+    inputValueMin: userMinuteInput.value,
+  }
+  localStorage.setItem('objStorage', JSON.stringify(objStorage))
+}
 
-staticMin.addEventListener('click', () => {
+function getInputSmall() {
+  userMinuteInput.setAttribute('disabled', true)
+  userSecondInput.setAttribute('disabled', true)
+  userMinuteInput.classList.add('smallInput');
+  userSecondInput.classList.add('smallInput');
+  userMinuteInput.classList.remove('bigInput');
+  userSecondInput.classList.remove('bigInput');
+}
+
+function userBtnStaticValue() {
   resetApp();
   start.removeEventListener('click', resetApp)
   staticTime = 51 * 60 * 1000;
@@ -60,11 +95,7 @@ staticMin.addEventListener('click', () => {
   userSecondInput.value = "00";
   objValue.userMinuteInput = "51";
   objValue.userSecondInput = "00";
-  console.log('staticMin', staticTime);
-});
-
-userSecondInput.addEventListener('input', funcSecInput)
-userMinuteInput.addEventListener('input', funcMinInput)
+}
 
 function funcSecInput() {
   let value = userSecondInput.value
@@ -74,6 +105,13 @@ function funcSecInput() {
   }
   if (value < 0 || value > 59) userSecondInput.value = '';
 
+  if (isNaN(+userSecondInput.value) && value.length === 1) {
+    userSecondInput.value = ''
+  }
+  if (isNaN(+userSecondInput.value) && value.length === 2) {
+    userSecondInput.value = value.slice(0, 1);
+  }
+
   objValue = {
     ...objValue,
     userSecondInput: value
@@ -81,12 +119,21 @@ function funcSecInput() {
 }
 
 function funcMinInput() {
+
   let value = userMinuteInput.value
   let maxLength = userMinuteInput.maxLength
   if (value.length > maxLength) {
     userMinuteInput.value = value.slice(0, maxLength);
   }
-  if (value < 0 || value > 59) userMinuteInput.value = '';
+  if (value < 0 || value > 60) userMinuteInput.value = '';
+
+  if (isNaN(+userMinuteInput.value) && value.length === 1) {
+    userMinuteInput.value = ''
+  }
+  if (isNaN(+userMinuteInput.value) && value.length === 2) {
+    userMinuteInput.value = value.slice(0, 1);
+  }
+
 
   if (value.length === 2) userSecondInput.focus();
   objValue = {
@@ -97,12 +144,56 @@ function funcMinInput() {
 }
 
 function inputKeyEnter(event) {
-  // event.stopPropagation();
-  // event.stopImmediatePropagation();
-  // event.preventDefault();
 
-  if (+event.key >= 0 && +event.key < 9 && userMinuteInput.value.length === 0) {
+  prevEventKey = currentEventKey
+  currentEventKey = event.key
+
+  if (event.target === userSecondInput) {
+    prevSelectionSec = currentSelectionSec
+    currentSelectionSec = event.target.selectionStart
+  }
+  if (event.target === userMinuteInput) {
+    prevSelectionMin = currentSelectionMin
+    currentSelectionMin = event.target.selectionStart
+  }
+
+  // console.log(event.target.selectionStart);
+  // console.log(event.target.selectionEnd);
+
+  // console.log('prevSelection', prevSelectionMin);
+  // console.log('currentSelection', currentSelectionMin);
+
+  // console.log('prevEventKey', prevEventKey);
+  // console.log('currentEventKey', currentEventKey);
+
+  //   event.target.selectionStart = 1
+  //   event.target.selectionEnd = 1
+
+  if (+event.key >= 0 && +event.key < 9 && userMinuteInput.value.length === 0 && userSecondInput !== document.activeElement) {
     userMinuteInput.focus()
+  }
+
+  if (userMinuteInput === document.activeElement && event.key === 'ArrowRight' && userMinuteInput.value.length === 0) {
+    userSecondInput.focus()
+  }
+
+  if (userSecondInput === document.activeElement && event.key === 'ArrowLeft' && userSecondInput.value.length === 0) {
+    userMinuteInput.focus()
+  }
+
+  if (userMinuteInput.value.length === 1 && event.key === 'ArrowRight') {
+    userSecondInput.focus()
+  }
+
+  if (userMinuteInput.value.length === 2 && event.key === 'ArrowRight' && userMinuteInput === document.activeElement && prevEventKey === 'ArrowRight' && prevSelectionMin === 2) {
+    userSecondInput.setSelectionRange(0, 0);
+    userSecondInput.focus()
+  }
+
+  if (userSecondInput === document.activeElement && event.key === "ArrowLeft" && event.target.selectionStart === 0 && prevEventKey === 'ArrowLeft' && prevSelectionSec === 0) {
+    userMinuteInput.focus()
+    event.target.selectionStart = 1
+    event.target.selectionEnd = 1
   }
 
   if (event.key === 'Enter' || event.code === 'Space') {
@@ -110,7 +201,7 @@ function inputKeyEnter(event) {
     event.preventDefault();
     start.click();
   }
-  if (event.key === "Backspace" && userSecondInput.value.length === 0) {
+  if (event.key === "Backspace" && userSecondInput.value.length === 0 && prevSelectionSec === 0) {
     userMinuteInput.focus()
   }
   if (event.key === 'Escape') {
@@ -118,11 +209,40 @@ function inputKeyEnter(event) {
   }
 }
 
+function inputCorrection() {
+
+  userMinuteInput.value = userMinuteInput.value.trim();
+  userSecondInput.value = userSecondInput.value.trim();
+
+  if (userMinuteInput.value.length === 0) {
+    userMinuteInput.value = '00';
+  }
+  if (userSecondInput.value.length === 0) {
+    userSecondInput.value = '00';
+  }
+  if (userSecondInput.value.length === 1) {
+    userSecondInput.value = '0' + userSecondInput.value;
+  }
+  if (userMinuteInput.value.length === 1) {
+    userMinuteInput.value = '0' + userMinuteInput.value;
+  }
+
+}
+
 function setNewTime() {
+
   userMinuteInput.value = objValue.userMinuteInput;
   userSecondInput.value = objValue.userSecondInput;
-  // currentTime = userMinuteInput.value * 60 * 1000 + userSecondInput.value * 1000;
   currentTime = (+objValue.userMinuteInput) * 60 * 1000 + (+objValue.userSecondInput) * 1000;
+
+  if (!storage && currentTime) { inputCorrection(); } else {
+    if (currentTime && Object.keys(objFromStore).length !== 0) {
+      userMinuteInput.value = objFromStore.inputValueMin;
+      userSecondInput.value = objFromStore.inputValueSec;
+      inputCorrection()
+    }
+  }
+
 }
 
 function removeListener() {
@@ -133,13 +253,9 @@ function removeListener() {
 
 function timerStart() {
 
-  console.log('timerStart', staticTime);
-
   if (staticTime) {
     currentTime = staticTime
-  } else {
-    setNewTime();
-  }
+  } else { setNewTime(); }
 
   removeListener();
   setTimeout(() => alertMessage.classList.add('alertHidden'), 6000)
@@ -150,12 +266,14 @@ function timerStart() {
 
   if (currentTime > 0) {
 
-    userMinuteInput.setAttribute('disabled', true)
-    userSecondInput.setAttribute('disabled', true)
-    userMinuteInput.classList.add('smallInput');
-    userSecondInput.classList.add('smallInput');
-    userMinuteInput.classList.remove('bigInput');
-    userSecondInput.classList.remove('bigInput');
+    inputCorrection()
+    getInputSmall()
+
+    if (currentTime && Object.keys(objFromStore).length !== 0) {
+      userMinuteInput.value = objFromStore.inputValueMin;
+      userSecondInput.value = objFromStore.inputValueSec;
+      inputCorrection()
+    }
 
     btnReset.classList.add('btnReset')
     start.classList.remove('btn-primary')
@@ -164,7 +282,7 @@ function timerStart() {
 
     start.addEventListener('click', pauseApp)
 
-    timeoutId = setTimeout(() => {
+    function playMusic() {
       music.play();
       start.innerText = 'Reset'
       start.classList.remove('btn-warning')
@@ -172,22 +290,21 @@ function timerStart() {
       start.removeEventListener('click', timerStart)
       start.removeEventListener('click', pauseApp)
       start.addEventListener('click', resetApp)
-      clearTimeout(timeoutId)
-    }, currentTime)
+      semicolon.classList.add('spanHidden');
+      minutes.innerText = "";
+      if (!staticTime) {
+        seconds.innerText = 'Timer is stopped'
+      } else { seconds.innerText = '' }
+    }
 
 
     intervalId = setInterval(() => {
       currentTime -= 1000
       calcTime();
-      localStorage.setItem('currentTime', currentTime)
+      storageSave();
       if (currentTime < 1000) {
         clearInterval(intervalId)
-        semicolon.classList.add('spanHidden');
-        minutes.innerText = "";
-        if (!staticTime) {
-          seconds.innerText = 'Timer is stopped'
-        } else { seconds.innerText = '' }
-
+        playMusic()
       }
     }, 1000);
   } else {
@@ -210,12 +327,20 @@ function calcTime() {
     seconds.innerText = "0" + userSeconds;
   } else { seconds.innerText = userSeconds; }
 
+  title.innerText = 'Timer ' + minutes.innerText + ':' + seconds.innerText;
   spanTimerBlock.style.opacity = "1";
 }
 
-
 function pauseApp() {
-  // debugger
+
+  inputCorrection()
+
+  if (currentTime && Object.keys(objFromStore).length !== 0) {
+    userMinuteInput.value = objFromStore.inputValueMin;
+    userSecondInput.value = objFromStore.inputValueSec;
+    inputCorrection()
+  }
+
   pauseTime = currentTime;
 
   if (currentTime > 0) {
@@ -223,24 +348,20 @@ function pauseApp() {
     btnReset.classList.remove('btnReset')
 
     btnReset.addEventListener('click', resetApp)
-    clearTimeout(timeoutId)
     clearInterval(intervalId)
 
     start.classList.remove('btn-primary')
     start.classList.add('btn-warning')
 
     start.innerText = 'Continue'
-    // start.insertAdjacentElement('afterend', resetBtn)
     start.addEventListener('click', timerStart)
-    localStorage.setItem('currentTime', currentTime)
+    storageSave();
 
     return;
   }
 }
 
-
 function resetApp() {
-
 
   userMinuteInput.removeAttribute('disabled')
   userSecondInput.removeAttribute('disabled')
@@ -250,8 +371,7 @@ function resetApp() {
   userSecondInput.classList.add('bigInput');
 
   spanTimerBlock.style.opacity = "0";
-
-  clearTimeout(timeoutId)
+  title.innerText = 'Timer';
   clearInterval(intervalId)
 
   pauseTime = 0;
@@ -268,8 +388,9 @@ function resetApp() {
 
   seconds.innerText = '';
   minutes.innerText = '';
+  objFromStore = {};
 
-  localStorage.removeItem('currentTime')
+  localStorage.removeItem('objStorage')
   music.pause()
   start.innerText = 'Start'
   semicolon.classList.add('spanHidden');
@@ -279,6 +400,7 @@ function resetApp() {
   start.classList.add('btn-primary')
 
   btnReset.removeEventListener('click', resetApp)
+  start.removeEventListener('click', resetApp)
   start.removeEventListener('click', pauseApp)
   start.addEventListener('click', timerStart)
 
