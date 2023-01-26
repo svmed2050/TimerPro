@@ -11,7 +11,43 @@
   box-shadow:none
 }
 
-.btnReset, .alertHidden, .spanHidden {
+/*      IMG          */
+
+.card-container {
+  margin: 0 auto;
+  width: 600px;
+}
+
+.card-position {
+  display: flex;
+  justify-content: center;
+}
+
+.getcard {
+  gap: 20px
+}
+
+.blackImg {
+  opacity: 50%;
+  filter: grayscale(100%);
+}
+
+.imgAnimation {
+  animation-name: imgOpacityAnimation;
+  animation-duration: 1s;
+  opacity: 100%
+}
+
+@keyframes imgOpacityAnimation {
+  from {opacity: 50%}
+  to {opacity: 100%}
+}
+
+
+
+
+
+.btnReset, .alertHidden, .spanHidden, .hideResetCardsBtn {
   display: none;
 }
 
@@ -22,6 +58,10 @@
   top: 42%;
   animation-name: alertPlace;
   animation-duration: 6s;
+}
+
+.soundBox {
+  margin-bottom: 50px;
 }
 
 

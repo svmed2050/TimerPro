@@ -31,9 +31,6 @@
           <span id="seconds"></span>
         </div>
 
-
-
-
         <div class="clockSec">
 
           <div>
@@ -53,7 +50,7 @@
         Enter a number to continue...
       </div>
 
-      <div class="row text-center">
+      <div class="row text-center soundBox">
         <div class="accordion" id="accordionExample">
           <div class="accordion-item">
             <h2 class="accordion-header" id="headingOne">
@@ -71,10 +68,10 @@
 
                   <audio id="musicId" src="./src/music/SiaUnstoppable.mp3"></audio>
                   <select class="form-select" name="music" id="musicSelect">
-                    <option value="./music/SiaUnstoppable.mp3">Unstopable (Sia)</option>
-                    <option value="./music/forest.mp3">Forest</option>
-                    <option value="./music/mountain.mp3">Mountain</option>
-                    <option value="./music/summer.mp3">Summer</option>
+                    <option value="./src/music/SiaUnstoppable.mp3">Unstopable (Sia)</option>
+                    <option value="./src/music/forest.mp3">Forest</option>
+                    <option value="./src/music/mountain.mp3">Mountain</option>
+                    <option value="./src/music/summer.mp3">Summer</option>
                   </select>
                 </div>
 
@@ -88,6 +85,54 @@
         </div>
       </div>
 
+      <div class="card-container">
+        <div class="row imgAnimation getcard card-position">
+          <div class="card blackImg" style="width: 10rem;">
+            <img src="./src/img/start.png" class="card-img-top" alt="First block">
+            <div class="card-body">
+              <p class="card-text">Блок 1</p>
+            </div>
+          </div>
+
+          <div class="card blackImg" style="width: 10rem;">
+            <img src="./src/img/start.png" class="card-img-top" alt="First block">
+            <div class="card-body">
+              <p class="card-text">Блок 2</p>
+            </div>
+          </div>
+
+          <div class="card blackImg" style="width: 10rem;">
+            <img src="./src/img/start.png" class="card-img-top" alt="First block">
+            <div class="card-body">
+              <p class="card-text">Блок 3</p>
+            </div>
+          </div>
+
+          <div class="card blackImg" style="width: 10rem;">
+            <img src="./src/img/start.png" class="card-img-top" alt="First block">
+            <div class="card-body">
+              <p class="card-text">Блок 4</p>
+            </div>
+          </div>
+
+          <div class="card blackImg" style="width: 10rem;">
+            <img src="./src/img/start.png" class="card-img-top" alt="First block">
+            <div class="card-body">
+              <p class="card-text">Блок 5</p>
+            </div>
+          </div>
+
+          <div class="card blackImg" style="width: 10rem;">
+            <img src="./src/img/start.png" class="card-img-top" alt="First block">
+            <div class="card-body">
+              <p class="card-text">Блок 6</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button id="resetCardsBtn" class="btnAnimation btn btn-danger btn-lg hideResetCardsBtn">Reset Cards</button>
 
 
     </div>

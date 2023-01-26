@@ -1,3 +1,11 @@
+import * as sound from './music'
+
+const objSound = {
+  0: sound.SiaUnstoppable,
+  1: sound.forest,
+  2: sound.mountain,
+  3: sound.summer,
+}
 
 const music = document.getElementById('musicId')
 
@@ -13,6 +21,8 @@ const alertMessage = document.getElementById("alert")
 const semicolon = document.querySelector(".semicolon")
 const btnReset = document.querySelector('.btnReset')
 const title = document.getElementById('title');
+const cards = document.querySelector('.getcard').children
+const resetCardsBtn = document.getElementById('resetCardsBtn');
 
 let storage;
 let intervalId, currentTime = 0;
@@ -21,41 +31,106 @@ let staticTime;
 let objValue = {};
 let objStorage = {};
 let objFromStore = {};
+let objCards = {};
+let objCardsFromStore = {};
+
 
 let currentEventKey, prevEventKey;
 let prevSelectionSec, currentSelectionSec;
 let prevSelectionMin, currentSelectionMin;
 
-document.addEventListener('keyup', inputKeyEnter)
-userSecondInput.addEventListener('input', funcSecInput)
-userMinuteInput.addEventListener('input', funcMinInput)
-start.addEventListener('click', timerStart)
-staticMin.addEventListener('click', userBtnStaticValue);
 
 musicModule();
 checkStorage();
+setCardsFromStorage()
 
-function musicModule() {
 
-  const musicSelect = document.getElementById('musicSelect')
-  const customVolume = document.getElementById('customVolume')
 
-  music.volume = customVolume.value;
+// function resetCards() {
+//   for (let key in objCards) {
+//     if (objCards[key] === true && resetCardsBtn.classList.value.includes('hideResetCardsBtn')) {
+//       resetCardsBtn.classList.remove('hideResetCardsBtn');
+//     }
+//   }
+// }
 
-  customVolume.onchange = () => {
-    music.volume = customVolume.value;
+
+function setCardsFromStorage() {
+
+  if (Object.keys(objCardsFromStore).length !== 0) {
+
+    objCards = objCardsFromStore;
+
+    Array.from(cards).forEach((card, index) => {
+      if (objCardsFromStore[index] === true) {
+        card.classList.toggle('imgAnimation')
+        card.classList.toggle('blackImg')
+      }
+      if (objCardsFromStore[index] === true && resetCardsBtn.classList.value.includes('hideResetCardsBtn')) {
+        resetCardsBtn.classList.remove('hideResetCardsBtn');
+      }
+
+      // Прослушка после карточек из storage
+      card.addEventListener('click', () => {
+        card.classList.toggle('imgAnimation')
+        card.classList.toggle('blackImg')
+        createObjCards(card, index, objCards)
+      })
+
+    })
+  } else {
+    setObjCards()
   }
 
-  musicSelect.onchange = () => {
-    let sel = musicSelect.selectedIndex;
-    let selOption = musicSelect.options;
-    music.setAttribute('src', selOption[sel].value)
-  }
 }
+
+function setObjCards() {
+
+  Array.from(cards).forEach((card, index) => {
+    createObjCards(card, index)
+    card.addEventListener('click', () => {
+      card.classList.toggle('imgAnimation')
+      card.classList.toggle('blackImg')
+
+      createObjCards(card, index, objCards)
+    })
+  })
+}
+
+function createObjCards(card, index, obj) {
+  if (card.classList.value.includes('imgAnimation')) {
+    obj[index] = true
+  } else {
+    obj[index] = false
+  }
+
+  storageSaveCards();
+}
+
+function storageSaveTime() {
+
+  objStorage = {
+    currentTime: currentTime,
+    inputValueSec: userSecondInput.value,
+    inputValueMin: userMinuteInput.value,
+  }
+  localStorage.setItem('objStorage', JSON.stringify(objStorage))
+}
+
+function storageSaveCards() {
+
+  localStorage.setItem('objStorageCards', JSON.stringify(objCards))
+}
+
 
 function checkStorage() {
   objFromStore = localStorage.getItem('objStorage')
   objFromStore = JSON.parse(objFromStore)
+
+  objCardsFromStore = localStorage.getItem('objStorageCards')
+  objCardsFromStore = JSON.parse(objCardsFromStore);
+
+
   if (objFromStore !== null) {
     storage = objFromStore.currentTime;
   }
@@ -68,14 +143,38 @@ function checkStorage() {
   } else { resetApp() }
 }
 
-function storageSave() {
-  objStorage = {
-    // ...objStorage,
-    currentTime: currentTime,
-    inputValueSec: userSecondInput.value,
-    inputValueMin: userMinuteInput.value,
+
+
+document.addEventListener('keyup', inputKeyEnter)
+userSecondInput.addEventListener('input', funcSecInput)
+userMinuteInput.addEventListener('input', funcMinInput)
+start.addEventListener('click', timerStart)
+staticMin.addEventListener('click', userBtnStaticValue);
+
+
+
+
+function musicModule() {
+  const musicSelect = document.getElementById('musicSelect')
+  const customVolume = document.getElementById('customVolume')
+
+  music.volume = customVolume.value;
+
+  customVolume.onchange = () => {
+    music.volume = customVolume.value;
   }
-  localStorage.setItem('objStorage', JSON.stringify(objStorage))
+
+  musicSelect.onchange = () => {
+    let sel = musicSelect.selectedIndex;
+    for (let key in objSound) {
+      if (+sel === +key) {
+        music.setAttribute('src', objSound[key])
+      }
+    }
+    // let selOption = musicSelect.options;
+    // music.setAttribute('src', selOption[sel].value)
+    // music.src = selOption[sel].value;
+  }
 }
 
 function getInputSmall() {
@@ -253,6 +352,7 @@ function removeListener() {
 
 function timerStart() {
 
+
   if (staticTime) {
     currentTime = staticTime
   } else { setNewTime(); }
@@ -283,6 +383,7 @@ function timerStart() {
     start.addEventListener('click', pauseApp)
 
     function playMusic() {
+      console.log(music);
       music.play();
       start.innerText = 'Reset'
       start.classList.remove('btn-warning')
@@ -301,10 +402,10 @@ function timerStart() {
     intervalId = setInterval(() => {
       currentTime -= 1000
       calcTime();
-      storageSave();
+      storageSaveTime();
       if (currentTime < 1000) {
-        clearInterval(intervalId)
         playMusic()
+        clearInterval(intervalId)
       }
     }, 1000);
   } else {
@@ -355,7 +456,7 @@ function pauseApp() {
 
     start.innerText = 'Continue'
     start.addEventListener('click', timerStart)
-    storageSave();
+    storageSaveTime();
 
     return;
   }
