@@ -28,27 +28,27 @@
 }
 
 .blackImg {
-  opacity: 50%;
-  filter: grayscale(100%);
+  opacity: 0.3;
+  filter: grayscale(1);
 }
 
 .imgAnimation {
   animation-name: imgOpacityAnimation;
   animation-duration: 1s;
-  opacity: 100%
+  opacity: 1
 }
 
 @keyframes imgOpacityAnimation {
-  from {opacity: 50%}
-  to {opacity: 100%}
+  from {opacity: 0.5}
+  to {opacity: 1}
 }
 
-
-
-
-
-.btnReset, .alertHidden, .spanHidden, .hideResetCardsBtn {
+.btnReset, .alertHidden, .spanHidden, .hideResetCardsBtn, .cardsHidden {
   display: none;
+}
+
+.colorGray {
+  background-color: rgb(188, 169, 169);
 }
 
 .alertPlace {
@@ -79,6 +79,11 @@
 .btnAnimation {
   animation-name: displayAnimation;
   animation-duration: 1s;
+}
+
+@keyframes displayAnimation {
+  from {opacity: 0;}
+  to {opacity: 1;}
 }
 
 
@@ -154,6 +159,13 @@ label {
   font-size: 50px;
   padding-left: 6px;
 } */
+
+.btnCards {
+  display: block;
+  width: 200px;
+  margin: 0 auto;
+  margin-bottom: 40px;
+}
 
 .semicolon {
   font-size: 50px;

@@ -1,4 +1,4 @@
-import * as sound from './music'
+import * as sound from './music';
 
 const objSound = {
   0: sound.SiaUnstoppable,
@@ -23,6 +23,8 @@ const btnReset = document.querySelector('.btnReset')
 const title = document.getElementById('title');
 const cards = document.querySelector('.getcard').children
 const resetCardsBtn = document.getElementById('resetCardsBtn');
+const btnShowCards = document.getElementById('btnShowCards')
+const allCardsBlock = document.getElementById('allCardsBlock')
 
 let storage;
 let intervalId, currentTime = 0;
@@ -39,26 +41,32 @@ let currentEventKey, prevEventKey;
 let prevSelectionSec, currentSelectionSec;
 let prevSelectionMin, currentSelectionMin;
 
+document.addEventListener('keyup', inputKeyEnter)
+userSecondInput.addEventListener('input', funcSecInput)
+userMinuteInput.addEventListener('input', funcMinInput)
+start.addEventListener('click', timerStart)
+staticMin.addEventListener('click', userBtnStaticValue);
+resetCardsBtn.addEventListener('click', resetObjCards)
+
+btnShowCards.addEventListener('click', () => {
+  if (btnShowCards.innerText === 'Show Cards ⇣') {
+    btnShowCards.innerText = 'Hide Cards ⇡';
+  } else {
+    btnShowCards.innerText = 'Show Cards ⇣';
+  }
+  allCardsBlock.classList.toggle('cardsHidden')
+  resetCardsBtn.classList.toggle('cardsHidden')
+})
+
 
 musicModule();
 checkStorage();
 setCardsFromStorage()
 
-
-
-// function resetCards() {
-//   for (let key in objCards) {
-//     if (objCards[key] === true && resetCardsBtn.classList.value.includes('hideResetCardsBtn')) {
-//       resetCardsBtn.classList.remove('hideResetCardsBtn');
-//     }
-//   }
-// }
-
-
 function setCardsFromStorage() {
 
-  if (Object.keys(objCardsFromStore).length !== 0) {
-
+  // if (Object.keys(objCardsFromStore).length !== 0) {
+  if (objCardsFromStore !== null) {
     objCards = objCardsFromStore;
 
     Array.from(cards).forEach((card, index) => {
@@ -68,6 +76,8 @@ function setCardsFromStorage() {
       }
       if (objCardsFromStore[index] === true && resetCardsBtn.classList.value.includes('hideResetCardsBtn')) {
         resetCardsBtn.classList.remove('hideResetCardsBtn');
+        resetCardsBtn.classList.add('btnAnimation');
+
       }
 
       // Прослушка после карточек из storage
@@ -87,11 +97,11 @@ function setCardsFromStorage() {
 function setObjCards() {
 
   Array.from(cards).forEach((card, index) => {
-    createObjCards(card, index)
+    createObjCards(card, index, objCards)
+
     card.addEventListener('click', () => {
       card.classList.toggle('imgAnimation')
       card.classList.toggle('blackImg')
-
       createObjCards(card, index, objCards)
     })
   })
@@ -100,8 +110,23 @@ function setObjCards() {
 function createObjCards(card, index, obj) {
   if (card.classList.value.includes('imgAnimation')) {
     obj[index] = true
+    resetCardsBtn.classList.remove('hideResetCardsBtn');
+    resetCardsBtn.classList.add('btnAnimation');
   } else {
+
     obj[index] = false
+
+    let marker = true;
+
+    for (let key in obj) {
+      if (obj[key] === true) {
+        marker = false
+      }
+    }
+
+    if (marker) {
+      resetCardsBtn.classList.add('hideResetCardsBtn');
+    }
   }
 
   storageSaveCards();
@@ -121,7 +146,6 @@ function storageSaveCards() {
 
   localStorage.setItem('objStorageCards', JSON.stringify(objCards))
 }
-
 
 function checkStorage() {
   objFromStore = localStorage.getItem('objStorage')
@@ -143,16 +167,18 @@ function checkStorage() {
   } else { resetApp() }
 }
 
+function resetObjCards() {
 
+  objCards = {};
+  localStorage.removeItem('objStorageCards')
+  resetCardsBtn.classList.add('hideResetCardsBtn');
 
-document.addEventListener('keyup', inputKeyEnter)
-userSecondInput.addEventListener('input', funcSecInput)
-userMinuteInput.addEventListener('input', funcMinInput)
-start.addEventListener('click', timerStart)
-staticMin.addEventListener('click', userBtnStaticValue);
+  Array.from(cards).forEach(card => {
+    card.classList.add('blackImg')
+    card.classList.remove('imgAnimation')
+  })
 
-
-
+}
 
 function musicModule() {
   const musicSelect = document.getElementById('musicSelect')
@@ -224,7 +250,7 @@ function funcMinInput() {
   if (value.length > maxLength) {
     userMinuteInput.value = value.slice(0, maxLength);
   }
-  if (value < 0 || value > 60) userMinuteInput.value = '';
+  if (value < 0 || value > 100) userMinuteInput.value = '';
 
   if (isNaN(+userMinuteInput.value) && value.length === 1) {
     userMinuteInput.value = ''
@@ -233,8 +259,10 @@ function funcMinInput() {
     userMinuteInput.value = value.slice(0, 1);
   }
 
+  if (value.length === 2) {
+    userSecondInput.focus();
+  }
 
-  if (value.length === 2) userSecondInput.focus();
   objValue = {
     ...objValue,
     userMinuteInput: value
