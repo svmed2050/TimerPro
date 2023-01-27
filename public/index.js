@@ -1,5 +1,7 @@
 import * as sound from './music';
 
+// window.scrollTo(0, document.body.scrollHeight)
+
 const objSound = {
   0: sound.SiaUnstoppable,
   1: sound.forest,
@@ -56,6 +58,8 @@ btnShowCards.addEventListener('click', () => {
   }
   allCardsBlock.classList.toggle('cardsHidden')
   resetCardsBtn.classList.toggle('cardsHidden')
+
+  window.scrollTo(0, document.body.scrollHeight)
 })
 
 
@@ -112,6 +116,7 @@ function createObjCards(card, index, obj) {
     obj[index] = true
     resetCardsBtn.classList.remove('hideResetCardsBtn');
     resetCardsBtn.classList.add('btnAnimation');
+    window.scrollTo(0, document.body.scrollHeight);
   } else {
 
     obj[index] = false

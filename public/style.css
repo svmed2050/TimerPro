@@ -1,5 +1,9 @@
 
 
+button#resetCardsBtn {
+  margin-bottom: 40px;
+}
+
 .clockSec {
   display: flex;
   justify-content: center;
@@ -173,12 +177,12 @@ label {
 
 .startBtn {
   width: 200px;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
 }
 
 #seconds, #minutes {
   display: inline-block;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
   font-size: 50px;
 }
 
