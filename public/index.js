@@ -304,20 +304,6 @@ function timerStart() {
 
     start.addEventListener('click', pauseApp)
 
-    function playMusic() {
-      music.play();
-      start.innerText = 'Reset'
-      start.classList.remove('btn-warning')
-      start.classList.add('btn-danger')
-      start.removeEventListener('click', timerStart)
-      start.removeEventListener('click', pauseApp)
-      start.addEventListener('click', resetApp)
-      semicolon.classList.add('spanHidden');
-      minutes.innerText = "";
-      if (!staticTime) {
-        seconds.innerText = 'Timer is stopped'
-      } else { seconds.innerText = '' }
-    }
 
     let startDate = new Date();
     let savedCurrentTime = currentTime;
@@ -338,10 +324,26 @@ function timerStart() {
   }
 }
 
+function playMusic() {
+  music.play();
+  start.innerText = 'Reset'
+  start.classList.remove('btn-warning')
+  start.classList.add('btn-danger')
+  start.removeEventListener('click', timerStart)
+  start.removeEventListener('click', pauseApp)
+  start.addEventListener('click', resetApp)
+  semicolon.classList.add('spanHidden');
+  minutes.innerText = "";
+  if (!staticTime) {
+    seconds.innerText = 'Timer is stopped'
+  } else { seconds.innerText = '' }
+}
+
 function currentTimeCorrection(startDate, savedCurrentTime) {
   let nowDate = new Date()
   let diffTime = nowDate.getTime() - startDate.getTime();
   currentTime = Math.ceil((savedCurrentTime - diffTime) / 1000) * 1000
+
 }
 
 function calcTime() {
@@ -418,6 +420,7 @@ function resetApp() {
   objFromStore = {};
 
   localStorage.removeItem('objStorage')
+  music.currentTime = 0;
   music.pause()
   start.innerText = 'Start'
   semicolon.classList.add('spanHidden');
